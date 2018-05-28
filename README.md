@@ -40,10 +40,11 @@
 import RNAlarm from 'react-native-alarm';
 
 // TODO: What to do with the module?
-RNAlarm.setAlarm('Meeting',
-        'Meeting with customer',
-        '', 
-        '',
+
+RNAlarm.setAlarm(((new Date()).getTime() + x)+'', //millisecond since epoch, x is the additional time since current date time in millisecond
+        y, //y is title to show in the notification
+        z, //isRetry, nullable 
+        fileName, //for android put the mp3 in raw directories. fileName is the filename without the .mp3 extension
      () => {
        // Success callback function
      },
