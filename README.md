@@ -8,6 +8,7 @@
 ### Mostly automatic installation
 
 `$ react-native link react-native-alarm`
+replace all android folder in node_modules/react-native-alarm/ with android folder in this repo
 
 ### Manual installation
 
