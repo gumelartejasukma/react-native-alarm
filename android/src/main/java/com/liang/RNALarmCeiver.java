@@ -92,25 +92,38 @@ public class RNALarmCeiver extends BroadcastReceiver {
 
 
             try {
+                if(player.isPlaying()){
+                  player.stop();
+                }
+                player.reset();
                 player.setDataSource(context, uri);
-                player.setLooping(true);
+                player.setLooping(false);
                 player.prepareAsync();
+                // player.start();
+                // player.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
+                // {
+                //      @Override
+                //      public void onCompletion(MediaPlayer mp)
+                //              {
+                //
+                //              }
+                // });
                 player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
                         player.start();
-                        new CountDownTimer(50000, 10000) {
-                            public void onTick(long millisUntilFinished) {
-
-                            }
-
-                            public void onFinish() {
-                                if (player.isPlaying()) {
-                                    player.stop();
-                                    player.reset();
-                                }
-                            }
-                        }.start();
+                        // new CountDownTimer(50000, 10000) {
+                        //     public void onTick(long millisUntilFinished) {
+                        //
+                        //     }
+                        //
+                        //     public void onFinish() {
+                        //         if (player.isPlaying()) {
+                        //             player.stop();
+                        //             player.reset();
+                        //         }
+                        //     }
+                        // }.start();
                     }
                 });
 
@@ -121,26 +134,30 @@ public class RNALarmCeiver extends BroadcastReceiver {
 
             if (musicUri != null  && !"".equals(musicUri)) {
                 try {
-
+                    if(player.isPlaying()){
+                      player.stop();
+                    }
+                    player.reset();
                     player.setDataSource(context, uri);
-                    player.setLooping(true);
+                    player.setLooping(false);
                     player.prepareAsync();
+                    // player.start();
                     player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mp) {
                             player.start();
-                            new CountDownTimer(50000, 10000) {
-                                public void onTick(long millisUntilFinished) {
-
-                                }
-
-                                public void onFinish() {
-                                    if (player.isPlaying()) {
-                                        player.stop();
-                                        player.reset();
-                                    }
-                                }
-                            }.start();
+                            // new CountDownTimer(50000, 10000) {
+                            //     public void onTick(long millisUntilFinished) {
+                            //
+                            //     }
+                            //
+                            //     public void onFinish() {
+                            //         if (player.isPlaying()) {
+                            //             player.stop();
+                            //             player.reset();
+                            //         }
+                            //     }
+                            // }.start();
                         }
                     });
                 } catch (IOException e) {
