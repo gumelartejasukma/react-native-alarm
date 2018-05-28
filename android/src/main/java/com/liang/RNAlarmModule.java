@@ -29,6 +29,18 @@ import java.util.Date;
 import static android.R.attr.track;
 import static android.R.attr.type;
 
+import java.io.File;
+import android.os.Environment;
+import android.content.ContentResolver;
+import android.content.res.AssetFileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import android.content.ContentValues;
+import android.provider.MediaStore;
+import android.net.Uri;
+
 public class RNAlarmModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
@@ -118,6 +130,69 @@ public class RNAlarmModule extends ReactContextBaseJavaModule {
                     errorCallback.invoke();
                     return;
                 }
+            }
+
+            if(musicUri!=null){
+              if(musicUri.length()>0){
+                File file = new File(Environment.getExternalStorageDirectory(),"/myRingtonFolder/Audio/");
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+
+                String path = Environment.getExternalStorageDirectory()
+                        .getAbsolutePath() + "/myRingtonFolder/Audio/";
+
+                File f = new File(path + "/", musicUri + ".mp3");
+                if(!f.exists()){
+                  // Uri mUri = Uri.parse("android.resource://"+ getReactApplicationContext().getPackageName() + "/raw/sounds/" + musicUri);
+                  Uri mUri = Uri.parse("android.resource://"+ getReactApplicationContext().getPackageName() + "/" + getReactApplicationContext().getResources().getIdentifier(musicUri, "raw", getReactApplicationContext().getPackageName()));
+                  if(mUri!=null){
+                    Log.d("gugum","M URI IS NOT NULL");
+                  }else{
+                    Log.d("gugum","M URI IS NULL");
+                  }
+                  ContentResolver mCr = getReactApplicationContext().getContentResolver();
+                  if(mCr!=null){
+                    Log.d("gugum","CONTENT RESOLVEEER IS NOT NULL");
+                  }else{
+                    Log.d("gugum","CONTENT RESOLVEEER IS NULL");
+                  }
+                  AssetFileDescriptor soundFile;
+                  try {
+                      soundFile = mCr.openAssetFileDescriptor(mUri, "r");
+                  } catch (FileNotFoundException e) {
+                      soundFile = null;
+                  }
+                  try {
+                      byte[] readData = new byte[1024];
+                      FileInputStream fis = soundFile.createInputStream();
+                      FileOutputStream fos = new FileOutputStream(f);
+                      int i = fis.read(readData);
+
+                      while (i != -1) {
+                          fos.write(readData, 0, i);
+                          i = fis.read(readData);
+                      }
+
+                      fos.close();
+                  } catch (IOException io) {
+                  }
+                  ContentValues values = new ContentValues();
+                  values.put(MediaStore.MediaColumns.DATA, f.getAbsolutePath());
+                  values.put(MediaStore.MediaColumns.TITLE, musicUri);
+                  values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/mp3");
+                  values.put(MediaStore.MediaColumns.SIZE, f.length());
+                  values.put(MediaStore.Audio.Media.ARTIST, musicUri);
+                  values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
+                  values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true);
+                  values.put(MediaStore.Audio.Media.IS_ALARM, true);
+                  values.put(MediaStore.Audio.Media.IS_MUSIC, true);
+                  Uri uri = MediaStore.Audio.Media.getContentUriForPath(f.getAbsolutePath());
+                  Uri newUri = mCr.insert(uri, values);
+                }
+                musicUri = f.getAbsolutePath();
+                Log.d("ReactNativeJS(11008)","MUSIC URI : "+musicUri);
+              }
             }
 
             AlarmManager alarmManager = (AlarmManager) reactContext.getSystemService(Context.ALARM_SERVICE);
